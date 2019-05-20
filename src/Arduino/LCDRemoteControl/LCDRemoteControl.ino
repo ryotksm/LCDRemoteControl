@@ -99,15 +99,35 @@ void setup(void) {
 void loop(void) {
   if (Serial.available() > 0)
   {
-    String str = Serial.readStringUntil(lf);
+    String str = Serial.readStringUntil(';');
     // 分割数 = 分割処理(文字列, 区切り文字, 配列)
     int index = split(str, ',', cmds);
     // 結果表示
     int cmdid = cmds[0].toInt();
     switch (cmdid) {
+      case CMDID_fillRect:
+        // fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
+        tft.fillRect(cmds[1].toInt(), cmds[2].toInt(),cmds[3].toInt(), cmds[4].toInt(),cmds[5].toInt());
+        break;
       case CMDID_fillScreen:
         // fillScreen(uint16_t color)
         tft.fillScreen(cmds[1].toInt());
+        break;
+      case CMDID_drawLine:
+        // drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color)
+        tft.drawLine(cmds[1].toInt(), cmds[2].toInt(),cmds[3].toInt(), cmds[4].toInt(),cmds[5].toInt());
+        break;
+      case CMDID_drawRect:
+        // drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
+        tft.drawRect(cmds[1].toInt(), cmds[2].toInt(),cmds[3].toInt(), cmds[4].toInt(),cmds[5].toInt());
+        break;
+      case CMDID_drawCircle:
+        // drawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color)
+        tft.drawCircle(cmds[1].toInt(), cmds[2].toInt(),cmds[3].toInt(), cmds[4].toInt());
+        break;
+      case CMDID_fillCircle:
+        // fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color)
+        tft.fillCircle(cmds[1].toInt(), cmds[2].toInt(),cmds[3].toInt(), cmds[4].toInt());
         break;
       case CMDID_setCursor:
         // setCursor(int16_t x, int16_t y)
@@ -140,7 +160,7 @@ void loop(void) {
         break;
       case CMDID_drawPixel:
         // drawPixel(int16_t x, int16_t y, uint16_t color)
-        tft.drawPixel(cmds[1].toInt(),cmds[2].toInt(),cmds[3].toInt());
+        tft.drawPixel(cmds[1].toInt(), cmds[2].toInt(), cmds[3].toInt());
         break;
       default:
         Serial.println(F("???"));
