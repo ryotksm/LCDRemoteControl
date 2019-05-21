@@ -357,6 +357,19 @@ void Small_GFX::drawCircleHelper( int16_t x0, int16_t y0,
     int16_t x     = 0;
     int16_t y     = r;
 
+    if (cornername & 0x81) {
+        writePixel(x0  , y0-r, color);
+    }
+    if (cornername & 0x6) {
+        writePixel(x0+r, y0  , color);
+    }
+    if (cornername & 0x18) {
+        writePixel(x0  , y0+r, color);
+    }
+    if (cornername & 0x60) {
+        writePixel(x0-r, y0  , color);
+    }
+
     while (x<y) {
         if (f >= 0) {
             y--;
@@ -366,20 +379,28 @@ void Small_GFX::drawCircleHelper( int16_t x0, int16_t y0,
         x++;
         ddF_x += 2;
         f     += ddF_x;
-        if (cornername & 0x4) {
-            writePixel(x0 + x, y0 + y, color);
-            writePixel(x0 + y, y0 + x, color);
+        if (cornername & 0x1) {
+            writePixel(x0 + x, y0 - y, color);
         }
         if (cornername & 0x2) {
-            writePixel(x0 + x, y0 - y, color);
             writePixel(x0 + y, y0 - x, color);
         }
+        if (cornername & 0x4) {
+            writePixel(x0 + y, y0 + x, color);
+        }
         if (cornername & 0x8) {
-            writePixel(x0 - y, y0 + x, color);
+            writePixel(x0 + x, y0 + y, color);
+        }
+        if (cornername & 0x10) {
             writePixel(x0 - x, y0 + y, color);
         }
-        if (cornername & 0x1) {
+        if (cornername & 0x20) {
+            writePixel(x0 - y, y0 + x, color);
+        }
+        if (cornername & 0x40) {
             writePixel(x0 - y, y0 - x, color);
+        }
+        if (cornername & 0x80) {
             writePixel(x0 - x, y0 - y, color);
         }
     }
@@ -493,10 +514,14 @@ void Small_GFX::drawRoundRect(int16_t x, int16_t y, int16_t w,
     writeFastVLine(x    , y+r  , h-2*r, color); // Left
     writeFastVLine(x+w-1, y+r  , h-2*r, color); // Right
     // draw four corners
-    drawCircleHelper(x+r    , y+r    , r, 1, color);
-    drawCircleHelper(x+w-r-1, y+r    , r, 2, color);
-    drawCircleHelper(x+w-r-1, y+h-r-1, r, 4, color);
-    drawCircleHelper(x+r    , y+h-r-1, r, 8, color);
+    drawCircleHelper(x+r    , y+r    , r, 0x1, color);
+    drawCircleHelper(x+w-r-1, y+r    , r, 0x2, color);
+    drawCircleHelper(x+w-r-1, y+h-r-1, r, 0x4, color);
+    drawCircleHelper(x+r    , y+h-r-1, r, 0x8, color);
+    drawCircleHelper(x+r    , y+r    , r, 0x10, color);
+    drawCircleHelper(x+w-r-1, y+r    , r, 0x20, color);
+    drawCircleHelper(x+w-r-1, y+h-r-1, r, 0x40, color);
+    drawCircleHelper(x+r    , y+h-r-1, r, 0x80, color);
     endWrite();
 }
 

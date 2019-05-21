@@ -60,6 +60,7 @@ typedef enum {
   CMDID_print = 27,
   CMDID_println = 28,
   CMDID_drawPixel = 29,
+  CMDID_drawCircleHelper = 30,
   CMDID_UNKNOWN = 0
 } CMDID;
 
@@ -161,6 +162,10 @@ void loop(void) {
       case CMDID_drawPixel:
         // drawPixel(int16_t x, int16_t y, uint16_t color)
         tft.drawPixel(cmds[1].toInt(), cmds[2].toInt(), cmds[3].toInt());
+        break;
+      case CMDID_drawCircleHelper:
+        // drawCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, uint16_t color)
+        tft.drawCircleHelper(cmds[1].toInt(), cmds[2].toInt(), cmds[3].toInt(), cmds[4].toInt(), cmds[5].toInt());
         break;
       default:
         Serial.println(F("???"));
