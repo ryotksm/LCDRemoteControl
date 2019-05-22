@@ -5,13 +5,13 @@
 // MIT license
 
 #if defined(__SAM3X8E__)
-	#include <include/pio.h>
-    #define PROGMEM
-    #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
-    #define pgm_read_word(addr) (*(const unsigned short *)(addr))
+#include <include/pio.h>
+#define PROGMEM
+#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
+#define pgm_read_word(addr) (*(const unsigned short *)(addr))
 #endif
 #ifdef __AVR__
-	#include <avr/pgmspace.h>
+#include <avr/pgmspace.h>
 #endif
 #include "pins_arduino.h"
 #include "wiring_private.h"
@@ -27,9 +27,9 @@
 // LCD controller chip identifiers
 #define ID_932X    0
 /*
-#define ID_7575    1
-#define ID_9341    2
-#define ID_HX8357D    3
+  #define ID_7575    1
+  #define ID_9341    2
+  #define ID_HX8357D    3
 */
 #define ID_UNKNOWN 0xFF
 #include "registers.h"
@@ -43,18 +43,18 @@ Small_TFTLCD::Small_TFTLCD(
 #ifndef USE_SMALL_SHIELD_PINOUT
   // Convert pin numbers to registers and bitmasks
   _reset     = reset;
-  #ifdef __AVR__
-    csPort     = portOutputRegister(digitalPinToPort(cs));
-    cdPort     = portOutputRegister(digitalPinToPort(cd));
-    wrPort     = portOutputRegister(digitalPinToPort(wr));
-    rdPort     = portOutputRegister(digitalPinToPort(rd));
-  #endif
-  #if defined(__SAM3X8E__)
-    csPort     = digitalPinToPort(cs);
-    cdPort     = digitalPinToPort(cd);
-    wrPort     = digitalPinToPort(wr);
-    rdPort     = digitalPinToPort(rd);
-  #endif
+#ifdef __AVR__
+  csPort     = portOutputRegister(digitalPinToPort(cs));
+  cdPort     = portOutputRegister(digitalPinToPort(cd));
+  wrPort     = portOutputRegister(digitalPinToPort(wr));
+  rdPort     = portOutputRegister(digitalPinToPort(rd));
+#endif
+#if defined(__SAM3X8E__)
+  csPort     = digitalPinToPort(cs);
+  cdPort     = digitalPinToPort(cd);
+  wrPort     = digitalPinToPort(wr);
+  rdPort     = digitalPinToPort(rd);
+#endif
   csPinSet   = digitalPinToBitMask(cs);
   cdPinSet   = digitalPinToBitMask(cd);
   wrPinSet   = digitalPinToBitMask(wr);
@@ -63,23 +63,23 @@ Small_TFTLCD::Small_TFTLCD(
   cdPinUnset = ~cdPinSet;
   wrPinUnset = ~wrPinSet;
   rdPinUnset = ~rdPinSet;
-  #ifdef __AVR__
-    *csPort   |=  csPinSet; // Set all control bits to HIGH (idle)
-    *cdPort   |=  cdPinSet; // Signals are ACTIVE LOW
-    *wrPort   |=  wrPinSet;
-    *rdPort   |=  rdPinSet;
-  #endif
-  #if defined(__SAM3X8E__)
-    csPort->PIO_SODR  |=  csPinSet; // Set all control bits to HIGH (idle)
-    cdPort->PIO_SODR  |=  cdPinSet; // Signals are ACTIVE LOW
-    wrPort->PIO_SODR  |=  wrPinSet;
-    rdPort->PIO_SODR  |=  rdPinSet;
-  #endif
+#ifdef __AVR__
+  *csPort   |=  csPinSet; // Set all control bits to HIGH (idle)
+  *cdPort   |=  cdPinSet; // Signals are ACTIVE LOW
+  *wrPort   |=  wrPinSet;
+  *rdPort   |=  rdPinSet;
+#endif
+#if defined(__SAM3X8E__)
+  csPort->PIO_SODR  |=  csPinSet; // Set all control bits to HIGH (idle)
+  cdPort->PIO_SODR  |=  cdPinSet; // Signals are ACTIVE LOW
+  wrPort->PIO_SODR  |=  wrPinSet;
+  rdPort->PIO_SODR  |=  rdPinSet;
+#endif
   pinMode(cs, OUTPUT);    // Enable outputs
   pinMode(cd, OUTPUT);
   pinMode(wr, OUTPUT);
   pinMode(rd, OUTPUT);
-  if(reset) {
+  if (reset) {
     digitalWrite(reset, HIGH);
     pinMode(reset, OUTPUT);
   }
@@ -183,23 +183,23 @@ void Small_TFTLCD::begin(uint16_t id) {
 
   delay(200);
 
-    uint16_t a, d;
-    driver = ID_932X;
-    CS_ACTIVE;
-    while(i < sizeof(ILI932x_regValues) / sizeof(uint16_t)) {
-      a = pgm_read_word(&ILI932x_regValues[i++]);
-      d = pgm_read_word(&ILI932x_regValues[i++]);
-      if(a == TFTLCD_DELAY) delay(d);
-      else                  writeRegister16(a, d);
-    }
-    setRotation(rotation);
-    setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
+  uint16_t a, d;
+  driver = ID_932X;
+  CS_ACTIVE;
+  while (i < sizeof(ILI932x_regValues) / sizeof(uint16_t)) {
+    a = pgm_read_word(&ILI932x_regValues[i++]);
+    d = pgm_read_word(&ILI932x_regValues[i++]);
+    if (a == TFTLCD_DELAY) delay(d);
+    else                  writeRegister16(a, d);
+  }
+  setRotation(rotation);
+  setAddrWindow(0, 0, TFTWIDTH - 1, TFTHEIGHT - 1);
 }
 
 void Small_TFTLCD::reset(void) {
 
   CS_IDLE;
-//  CD_DATA;
+  //  CD_DATA;
   WR_IDLE;
   RD_IDLE;
 
@@ -208,7 +208,7 @@ void Small_TFTLCD::reset(void) {
   delay(2);
   digitalWrite(5, HIGH);
 #else
-  if(_reset) {
+  if (_reset) {
     digitalWrite(_reset, LOW);
     delay(2);
     digitalWrite(_reset, HIGH);
@@ -219,7 +219,7 @@ void Small_TFTLCD::reset(void) {
   CS_ACTIVE;
   CD_COMMAND;
   write8(0x00);
-  for(uint8_t i=0; i<3; i++) WR_STROBE; // Three extra 0x00s
+  for (uint8_t i = 0; i < 3; i++) WR_STROBE; // Three extra 0x00s
   CS_IDLE;
 }
 
@@ -228,20 +228,20 @@ void Small_TFTLCD::reset(void) {
 // assumed pre-sorted (e.g. x2 >= x1).
 void Small_TFTLCD::setAddrWindow(int x1, int y1, int x2, int y2) {
   CS_ACTIVE;
-    // Values passed are in current (possibly rotated) coordinate
-    // system.  932X requires hardware-native coords regardless of
-    // MADCTL, so rotate inputs as needed.  The address counter is
-    // set to the top-left corner -- although fill operations can be
-    // done in any direction, the current screen rotation is applied
-    // because some users find it disconcerting when a fill does not
-    // occur top-to-bottom.
-    int x, y, t;
-    switch(rotation) {
-     default:
+  // Values passed are in current (possibly rotated) coordinate
+  // system.  932X requires hardware-native coords regardless of
+  // MADCTL, so rotate inputs as needed.  The address counter is
+  // set to the top-left corner -- although fill operations can be
+  // done in any direction, the current screen rotation is applied
+  // because some users find it disconcerting when a fill does not
+  // occur top-to-bottom.
+  int x, y, t;
+  switch (rotation) {
+    default:
       x  = x1;
       y  = y1;
       break;
-     case 1:
+    case 1:
       t  = y1;
       y1 = x1;
       x1 = TFTWIDTH  - 1 - y2;
@@ -250,7 +250,7 @@ void Small_TFTLCD::setAddrWindow(int x1, int y1, int x2, int y2) {
       x  = x2;
       y  = y1;
       break;
-     case 2:
+    case 2:
       t  = x1;
       x1 = TFTWIDTH  - 1 - x2;
       x2 = TFTWIDTH  - 1 - t;
@@ -260,7 +260,7 @@ void Small_TFTLCD::setAddrWindow(int x1, int y1, int x2, int y2) {
       x  = x2;
       y  = y2;
       break;
-     case 3:
+    case 3:
       t  = x1;
       x1 = y1;
       y1 = TFTHEIGHT - 1 - x2;
@@ -269,13 +269,13 @@ void Small_TFTLCD::setAddrWindow(int x1, int y1, int x2, int y2) {
       x  = x1;
       y  = y2;
       break;
-    }
-    writeRegister16(0x0050, x1); // Set address window
-    writeRegister16(0x0051, x2);
-    writeRegister16(0x0052, y1);
-    writeRegister16(0x0053, y2);
-    writeRegister16(0x0020, x ); // Set address counter to top left
-    writeRegister16(0x0021, y );
+  }
+  writeRegister16(0x0050, x1); // Set address window
+  writeRegister16(0x0051, x2);
+  writeRegister16(0x0052, y1);
+  writeRegister16(0x0053, y2);
+  writeRegister16(0x0020, x ); // Set address counter to top left
+  writeRegister16(0x0021, y );
   CS_IDLE;
 }
 
@@ -289,8 +289,8 @@ void Small_TFTLCD::flood(uint16_t color, uint32_t len) {
 
   CS_ACTIVE;
   CD_COMMAND;
-    write8(0x00); // High byte of GRAM register...
-    write8(0x22); // Write data to GRAM
+  write8(0x00); // High byte of GRAM register...
+  write8(0x22); // Write data to GRAM
 
   // Write first pixel normally, decrement counter by 1
   CD_DATA;
@@ -299,30 +299,30 @@ void Small_TFTLCD::flood(uint16_t color, uint32_t len) {
   len--;
 
   blocks = (uint16_t)(len / 64); // 64 pixels/block
-  if(hi == lo) {
+  if (hi == lo) {
     // High and low bytes are identical.  Leave prior data
     // on the port(s) and just toggle the write strobe.
-    while(blocks--) {
+    while (blocks--) {
       i = 16; // 64 pixels/block / 4 pixels/pass
       do {
         WR_STROBE; WR_STROBE; WR_STROBE; WR_STROBE; // 2 bytes/pixel
         WR_STROBE; WR_STROBE; WR_STROBE; WR_STROBE; // x 4 pixels
-      } while(--i);
+      } while (--i);
     }
     // Fill any remaining pixels (1 to 64)
-    for(i = (uint8_t)len & 63; i--; ) {
+    for (i = (uint8_t)len & 63; i--; ) {
       WR_STROBE;
       WR_STROBE;
     }
   } else {
-    while(blocks--) {
+    while (blocks--) {
       i = 16; // 64 pixels/block / 4 pixels/pass
       do {
         write8(hi); write8(lo); write8(hi); write8(lo);
         write8(hi); write8(lo); write8(hi); write8(lo);
-      } while(--i);
+      } while (--i);
     }
-    for(i = (uint8_t)len & 63; i--; ) {
+    for (i = (uint8_t)len & 63; i--; ) {
       write8(hi);
       write8(lo);
     }
@@ -331,20 +331,20 @@ void Small_TFTLCD::flood(uint16_t color, uint32_t len) {
 }
 
 void Small_TFTLCD::drawFastHLine(int16_t x, int16_t y, int16_t length,
-  uint16_t color)
+                                 uint16_t color)
 {
   int16_t x2;
 
   // Initial off-screen clipping
-  if((length <= 0     ) ||
-     (y      <  0     ) || ( y                  >= _height) ||
-     (x      >= _width) || ((x2 = (x+length-1)) <  0      )) return;
+  if ((length <= 0     ) ||
+      (y      <  0     ) || ( y                  >= _height) ||
+      (x      >= _width) || ((x2 = (x + length - 1)) <  0      )) return;
 
-  if(x < 0) {        // Clip left
+  if (x < 0) {       // Clip left
     length += x;
     x       = 0;
   }
-  if(x2 >= _width) { // Clip right
+  if (x2 >= _width) { // Clip right
     x2      = _width - 1;
     length  = x2 - x + 1;
   }
@@ -355,19 +355,19 @@ void Small_TFTLCD::drawFastHLine(int16_t x, int16_t y, int16_t length,
 }
 
 void Small_TFTLCD::drawFastVLine(int16_t x, int16_t y, int16_t length,
-  uint16_t color)
+                                 uint16_t color)
 {
   int16_t y2;
 
   // Initial off-screen clipping
-  if((length <= 0      ) ||
-     (x      <  0      ) || ( x                  >= _width) ||
-     (y      >= _height) || ((y2 = (y+length-1)) <  0     )) return;
-  if(y < 0) {         // Clip top
+  if ((length <= 0      ) ||
+      (x      <  0      ) || ( x                  >= _width) ||
+      (y      >= _height) || ((y2 = (y + length - 1)) <  0     )) return;
+  if (y < 0) {        // Clip top
     length += y;
     y       = 0;
   }
-  if(y2 >= _height) { // Clip bottom
+  if (y2 >= _height) { // Clip bottom
     y2      = _height - 1;
     length  = y2 - y + 1;
   }
@@ -377,27 +377,27 @@ void Small_TFTLCD::drawFastVLine(int16_t x, int16_t y, int16_t length,
   setAddrWindow(0, 0, _width - 1, _height - 1);
 }
 
-void Small_TFTLCD::fillRect(int16_t x1, int16_t y1, int16_t w, int16_t h, 
-  uint16_t fillcolor) {
+void Small_TFTLCD::fillRect(int16_t x1, int16_t y1, int16_t w, int16_t h,
+                            uint16_t fillcolor) {
   int16_t  x2, y2;
 
   // Initial off-screen clipping
-  if( (w            <= 0     ) ||  (h             <= 0      ) ||
-      (x1           >= _width) ||  (y1            >= _height) ||
-     ((x2 = x1+w-1) <  0     ) || ((y2  = y1+h-1) <  0      )) return;
-  if(x1 < 0) { // Clip left
+  if ( (w            <= 0     ) ||  (h             <= 0      ) ||
+       (x1           >= _width) ||  (y1            >= _height) ||
+       ((x2 = x1 + w - 1) <  0     ) || ((y2  = y1 + h - 1) <  0      )) return;
+  if (x1 < 0) { // Clip left
     w += x1;
     x1 = 0;
   }
-  if(y1 < 0) { // Clip top
+  if (y1 < 0) { // Clip top
     h += y1;
     y1 = 0;
   }
-  if(x2 >= _width) { // Clip right
+  if (x2 >= _width) { // Clip right
     x2 = _width - 1;
     w  = x2 - x1 + 1;
   }
-  if(y2 >= _height) { // Clip bottom
+  if (y2 >= _height) { // Clip bottom
     y2 = _height - 1;
     h  = y2 - y1 + 1;
   }
@@ -408,22 +408,22 @@ void Small_TFTLCD::fillRect(int16_t x1, int16_t y1, int16_t w, int16_t h,
 }
 
 void Small_TFTLCD::fillScreen(uint16_t color) {
-  
-    // For the 932X, a full-screen address window is already the default
-    // state, just need to set the address pointer to the top-left corner.
-    // Although we could fill in any direction, the code uses the current
-    // screen rotation because some users find it disconcerting when a
-    // fill does not occur top-to-bottom.
-    uint16_t x, y;
-    switch(rotation) {
-      default: x = 0            ; y = 0            ; break;
-      case 1 : x = TFTWIDTH  - 1; y = 0            ; break;
-      case 2 : x = TFTWIDTH  - 1; y = TFTHEIGHT - 1; break;
-      case 3 : x = 0            ; y = TFTHEIGHT - 1; break;
-    }
-    CS_ACTIVE;
-    writeRegister16(0x0020, x);
-    writeRegister16(0x0021, y);
+
+  // For the 932X, a full-screen address window is already the default
+  // state, just need to set the address pointer to the top-left corner.
+  // Although we could fill in any direction, the code uses the current
+  // screen rotation because some users find it disconcerting when a
+  // fill does not occur top-to-bottom.
+  uint16_t x, y;
+  switch (rotation) {
+    default: x = 0            ; y = 0            ; break;
+    case 1 : x = TFTWIDTH  - 1; y = 0            ; break;
+    case 2 : x = TFTWIDTH  - 1; y = TFTHEIGHT - 1; break;
+    case 3 : x = 0            ; y = TFTHEIGHT - 1; break;
+  }
+  CS_ACTIVE;
+  writeRegister16(0x0020, x);
+  writeRegister16(0x0021, y);
 
   flood(color, (long)TFTWIDTH * (long)TFTHEIGHT);
 }
@@ -431,31 +431,31 @@ void Small_TFTLCD::fillScreen(uint16_t color) {
 void Small_TFTLCD::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
   // Clip
-  if((x < 0) || (y < 0) || (x >= _width) || (y >= _height)) return;
+  if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height)) return;
 
   CS_ACTIVE;
-	  int16_t t;
-	  switch (rotation) {
-	  case 1:
-		  t = x;
-		  x = TFTWIDTH - 1 - y;
-		  y = t;
-		  break;
-	  case 2:
-		  x = TFTWIDTH - 1 - x;
-		  y = TFTHEIGHT - 1 - y;
-		  break;
-	  case 3:
-		  t = x;
-		  x = y;
-		  y = TFTHEIGHT - 1 - t;
-		  break;
-	  }
-	  writeRegister16(0x0020, x);
-	  writeRegister16(0x0021, y);
-	  writeRegister16(0x0022, color);
+  int16_t t;
+  switch (rotation) {
+    case 1:
+      t = x;
+      x = TFTWIDTH - 1 - y;
+      y = t;
+      break;
+    case 2:
+      x = TFTWIDTH - 1 - x;
+      y = TFTHEIGHT - 1 - y;
+      break;
+    case 3:
+      t = x;
+      x = y;
+      y = TFTHEIGHT - 1 - t;
+      break;
+  }
+  writeRegister16(0x0020, x);
+  writeRegister16(0x0021, y);
+  writeRegister16(0x0022, color);
 
-	  CS_IDLE;
+  CS_IDLE;
 }
 
 // Issues 'raw' an array of 16-bit color values to the LCD; used
@@ -466,13 +466,13 @@ void Small_TFTLCD::pushColors(uint16_t *data, uint8_t len, boolean first) {
   uint16_t color;
   uint8_t  hi, lo;
   CS_ACTIVE;
-  if(first == true) { // Issue GRAM write command only on first call
+  if (first == true) { // Issue GRAM write command only on first call
     CD_COMMAND;
     write8(0x00);
     write8(0x22);
   }
   CD_DATA;
-  while(len--) {
+  while (len--) {
     color = *data++;
     hi    = color >> 8; // Don't simplify or merge these
     lo    = color;      // lines, there's macro shenanigans
@@ -490,20 +490,20 @@ void Small_TFTLCD::setRotation(uint8_t x) {
 
   CS_ACTIVE;
 
-    uint16_t t;
-    switch(rotation) {
-     default: t = 0x1030; break;
-     case 1 : t = 0x1028; break;
-     case 2 : t = 0x1000; break;
-     case 3 : t = 0x1018; break;
-    }
-    writeRegister16(0x0003, t ); // MADCTL
-    // For 932X, init default full-screen address window:
-    setAddrWindow(0, 0, _width - 1, _height - 1); // CS_IDLE happens here
+  uint16_t t;
+  switch (rotation) {
+    default: t = 0x1030; break;
+    case 1 : t = 0x1028; break;
+    case 2 : t = 0x1000; break;
+    case 3 : t = 0x1018; break;
+  }
+  writeRegister16(0x0003, t ); // MADCTL
+  // For 932X, init default full-screen address window:
+  setAddrWindow(0, 0, _width - 1, _height - 1); // CS_IDLE happens here
 }
 
 #ifdef read8isFunctionalized
-  #define read8(x) x=read8fn()
+#define read8(x) x=read8fn()
 #endif
 
 // Because this function is used infrequently, it configures the ports for
@@ -512,45 +512,45 @@ void Small_TFTLCD::setRotation(uint8_t x) {
 // leave the ports in that state as a default.
 uint16_t Small_TFTLCD::readPixel(int16_t x, int16_t y) {
 
-  if((x < 0) || (y < 0) || (x >= _width) || (y >= _height)) return 0;
+  if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height)) return 0;
 
   CS_ACTIVE;
 
-    uint8_t hi, lo;
-    int16_t t;
-    switch(rotation) {
-     case 1:
+  uint8_t hi, lo;
+  int16_t t;
+  switch (rotation) {
+    case 1:
       t = x;
       x = TFTWIDTH  - 1 - y;
       y = t;
       break;
-     case 2:
+    case 2:
       x = TFTWIDTH  - 1 - x;
       y = TFTHEIGHT - 1 - y;
       break;
-     case 3:
+    case 3:
       t = x;
       x = y;
       y = TFTHEIGHT - 1 - t;
       break;
-    }
-    writeRegister16(0x0020, x);
-    writeRegister16(0x0021, y);
-    // Inexplicable thing: sometimes pixel read has high/low bytes
-    // reversed.  A second read fixes this.  Unsure of reason.  Have
-    // tried adjusting timing in read8() etc. to no avail.
-    for(uint8_t pass=0; pass<2; pass++) {
-      CD_COMMAND; write8(0x00); write8(0x22); // Read data from GRAM
-      CD_DATA;
-      setReadDir();  // Set up LCD data port(s) for READ operations
-      read8(hi);     // First 2 bytes back are a dummy read
-      read8(hi);
-      read8(hi);     // Bytes 3, 4 are actual pixel value
-      read8(lo);
-      setWriteDir(); // Restore LCD data port(s) to WRITE configuration
   }
-    CS_IDLE;
-    return ((uint16_t)hi << 8) | lo;
+  writeRegister16(0x0020, x);
+  writeRegister16(0x0021, y);
+  // Inexplicable thing: sometimes pixel read has high/low bytes
+  // reversed.  A second read fixes this.  Unsure of reason.  Have
+  // tried adjusting timing in read8() etc. to no avail.
+  for (uint8_t pass = 0; pass < 2; pass++) {
+    CD_COMMAND; write8(0x00); write8(0x22); // Read data from GRAM
+    CD_DATA;
+    setReadDir();  // Set up LCD data port(s) for READ operations
+    read8(hi);     // First 2 bytes back are a dummy read
+    read8(hi);
+    read8(hi);     // Bytes 3, 4 are actual pixel value
+    read8(lo);
+    setWriteDir(); // Restore LCD data port(s) to WRITE configuration
+  }
+  CS_IDLE;
+  return ((uint16_t)hi << 8) | lo;
 }
 
 // Ditto with the read/write port directions, as above.
@@ -558,22 +558,22 @@ uint16_t Small_TFTLCD::readID(void) {
   uint16_t id;
 
   // retry a bunch!
-	/*
-  for (int i = 0; i<5; i++) {
+  /*
+    for (int i = 0; i<5; i++) {
     id = readReg(0xD3);
     if (id == 0x9341) {
       return id;
     }
-  }
-	*/
+    }
+  */
 
   uint8_t hi, lo;
 
   /*
-  for (uint8_t i=0; i<128; i++) {
+    for (uint8_t i=0; i<128; i++) {
     Serial.print("$"); Serial.print(i, HEX);
     Serial.print(" = 0x"); Serial.println(readReg(i), HEX);
-  }
+    }
   */
 
   if (readReg(0x04) == 0x8000) { // eh close enough
@@ -584,12 +584,12 @@ uint16_t Small_TFTLCD::readID(void) {
       Serial.print("$"); Serial.print(i, HEX);
       Serial.print(" = 0x"); Serial.println(readReg(i), HEX);
       }
-    writeRegister24(HX8357D_SETC, 0xFF8357);
-    delay(300);
-    //Serial.println(readReg(0xD0), HEX);
-    if (readReg(0xD0) == 0x990000) {
+      writeRegister24(HX8357D_SETC, 0xFF8357);
+      delay(300);
+      //Serial.println(readReg(0xD0), HEX);
+      if (readReg(0xD0) == 0x990000) {
       return 0x8357;
-    }
+      }
     */
   }
 
@@ -633,7 +633,7 @@ uint32_t Small_TFTLCD::readReg(uint8_t r) {
   CS_IDLE;
   setWriteDir();  // Restore LCD data port(s) to WRITE configuration
 
-  //Serial.print("Read $"); Serial.print(r, HEX); 
+  //Serial.print("Read $"); Serial.print(r, HEX);
   //Serial.print(":\t0x"); Serial.println(id, HEX);
   return id;
 }

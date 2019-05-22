@@ -1,6 +1,6 @@
-
-#include <Small_GFX.h>
-#include <Small_TFTLCD.h>
+#include <SPI.h>
+#include "Small_GFX.h"
+#include "Small_TFTLCD.h"
 
 #define LCD_CS A0 // Chip Select goes to Analog 3
 #define LCD_CD A1 // Command/Data goes to Analog 2
@@ -94,7 +94,23 @@ void setup(void) {
   tft.fillScreen(BLACK);
   tft.setCursor(0, 0);
 
+  pinMode(MISO, OUTPUT);            //送信ポートを出力にする
+
+  SPI.setBitOrder(MSBFIRST);        //LSBFIRST / MSBFIRST
+  SPI.setDataMode(SPI_MODE3 );      //立ち上がりでラッチ
+  //SPCR |= _BV(SPE);                 //SPI Enable
+  SPI.attachInterrupt();            //SPI割り込み開始
+
   Serial.println(F(PROMPT));
+}
+
+// SPI割り込み処理
+
+ISR (SPI_STC_vect) {
+  byte cc = SPDR;    //SPIの受信バッファから取得
+  cc++;
+  SPDR = cc;      //送信データ格納
+  Serial.println(cc);//シリアル出力
 }
 
 void loop(void) {
